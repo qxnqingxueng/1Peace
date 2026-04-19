@@ -123,7 +123,7 @@ export const policyBrainFlow = ai.defineFlow(
       return {
         content: response.text,
         grounded: !retrieval.usedMock,
-        source: 'genkit',
+        source: 'genkit' as const,
       };
     } catch {
       return buildMockResponse(input, !retrieval.usedMock);

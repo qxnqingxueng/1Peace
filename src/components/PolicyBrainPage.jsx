@@ -6,6 +6,8 @@ import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import {
   auth, db, firebaseConfigMessage, googleProvider, isFirebaseConfigured,
 } from '../firebase/client';
+import PolicyTrackerView from './PolicyTrackerView';
+import PolicyImpactView from './PolicyImpactView';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SCOPED CSS  (injected once, removed on unmount)
@@ -29,7 +31,8 @@ const CSS = `
   color:var(--dark);background:var(--surface);
   display:flex;flex-direction:column;overflow:hidden;
 }
-.pb-shell *{box-sizing:border-box;margin:0;padding:0;}
+.pb-shell *{box-sizing:border-box;}
+.pb-shell .topbar *,.pb-shell .layout *{margin:0;padding:0;}
 
 /* topbar */
 .pb-shell .topbar{height:var(--topbar-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;box-shadow:var(--shadow-sm);}
@@ -38,6 +41,9 @@ const CSS = `
 .pb-shell .brand-name{font-weight:800;font-size:16px;color:var(--blue);}
 .pb-shell .brand-name span{color:var(--red);}
 .pb-shell .topbar-right{display:flex;align-items:center;gap:10px;}
+.pb-shell .topbar-nav{display:flex;gap:2px;background:var(--surface);border-radius:20px;padding:3px;border:1px solid var(--border);}
+.pb-shell .tn-btn{padding:3px 11px;border-radius:14px;border:none;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);background:transparent;transition:all .15s;}
+.pb-shell .tn-btn.active{background:var(--blue);color:white;}
 .pb-shell .lang-pill{display:flex;gap:2px;background:var(--surface);border-radius:20px;padding:3px;border:1px solid var(--border);}
 .pb-shell .lp-btn{padding:3px 10px;border-radius:14px;border:none;font-size:11px;font-weight:700;cursor:pointer;color:var(--muted);background:transparent;transition:all .15s;}
 .pb-shell .lp-btn.active{background:var(--blue);color:white;}
@@ -653,16 +659,13 @@ function CalculatorPanel({ profile, preselect, onOpenAgent }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(false);
 
-  // sync preselect when it changes
-  useEffect(() => { if (preselect != null) setPolicy(preselect); }, [preselect]);
-
   function run() {
     setResult(false);
     setLoading(true);
     setTimeout(() => { setLoading(false); setResult(true); }, 1800);
   }
 
-  const Tag = ({ group, val, cur, set }) => (
+  const Tag = ({ val, cur, set }) => (
     <button className={`tag${cur === val ? ' on' : ''}`} onClick={() => set(val)}>{val}</button>
   );
 
@@ -671,7 +674,7 @@ function CalculatorPanel({ profile, preselect, onOpenAgent }) {
       <div className="form-group">
         <span className="form-label">Income Group</span>
         <div className="tags-row">
-          {['B40','M40','T20'].map(v => <Tag key={v} group="inc" val={v} cur={inc} set={setInc}/>)}
+          {['B40','M40','T20'].map(v => <Tag key={v} val={v} cur={inc} set={setInc}/>)}
         </div>
       </div>
       <div className="form-group">
@@ -831,8 +834,8 @@ export default function PolicyBrainPage({ onBack }) {
   /* ── Profile state ── */
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [draftProfile, setDraftProfile] = useState(INITIAL_PROFILE);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [profileHydrated, setProfileHydrated] = useState(false);
+  const [, setProfileLoading] = useState(false);
+  const [, setProfileHydrated] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileError, setProfileError] = useState('');
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
@@ -848,6 +851,7 @@ export default function PolicyBrainPage({ onBack }) {
   /* ── Tool panel state ── */
   const [currentTool, setCurrentTool] = useState(null); // 'translator'|'calculator'|'agent'
   const [calcPreselect, setCalcPreselect] = useState(null);
+  const [activeModuleView, setActiveModuleView] = useState('chat');
 
   /* ── Lang ── */
   const [lang, setLang] = useState('en');
@@ -1038,6 +1042,7 @@ export default function PolicyBrainPage({ onBack }) {
 
   /* ── Tool handlers ── */
   const openTool = (name, presel) => {
+    setActiveModuleView('chat');
     setCurrentTool(name);
     if (name === 'calculator' && presel != null) setCalcPreselect(presel);
   };
@@ -1048,6 +1053,12 @@ export default function PolicyBrainPage({ onBack }) {
   };
 
   /* ── Journey step ── */
+  useEffect(() => {
+    if (activeModuleView !== 'chat' && currentTool) {
+      setCurrentTool(null);
+    }
+  }, [activeModuleView, currentTool]);
+
   const journeyStep = currentTool === 'translator' ? 1 : currentTool === 'calculator' ? 2 : currentTool === 'agent' ? 3 : 0;
   const toolMeta = {
     translator: { title: 'Policy Translator', sub: 'Get a plain-language summary of any Malaysian bill' },
@@ -1080,6 +1091,11 @@ export default function PolicyBrainPage({ onBack }) {
     { emoji: '🚗', label: 'Grab income & tax', q: 'Is my Grab income taxable?' },
     { emoji: '📚', label: 'PTPTN deferment', q: 'PTPTN — can I defer if unemployed?' },
     { emoji: '🌱', label: 'Solar panel subsidy', q: 'Solar panel subsidy in Malaysia?' },
+  ];
+  const moduleTabs = [
+    { id: 'chat', label: 'Chat', blurb: 'Policy AI workspace' },
+    { id: 'news', label: 'Tracker', blurb: 'Bills, aid & timeline' },
+    { id: 'impact', label: 'Impact', blurb: 'Public facility map' },
   ];
 
   return (
@@ -1122,6 +1138,13 @@ export default function PolicyBrainPage({ onBack }) {
           <div className="brand-name">1<span>Peace</span></div>
         </button>
         <div className="topbar-right">
+          <div className="topbar-nav">
+            {moduleTabs.map((tab) => (
+              <button key={tab.id} type="button" className={`tn-btn${activeModuleView === tab.id ? ' active' : ''}`} onClick={() => setActiveModuleView(tab.id)}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
           <div className="lang-pill">
             <button className={`lp-btn${lang === 'en' ? ' active' : ''}`} onClick={() => setLang('en')}>EN</button>
             <button className={`lp-btn${lang === 'bm' ? ' active' : ''}`} onClick={() => setLang('bm')}>BM</button>
@@ -1145,7 +1168,7 @@ export default function PolicyBrainPage({ onBack }) {
         </div>
       </div>
 
-      {/* ── Layout ── */}
+      {activeModuleView === 'chat' ? (
       <div className="layout">
 
         {/* ── Sidebar ── */}
@@ -1359,6 +1382,7 @@ export default function PolicyBrainPage({ onBack }) {
                 )}
                 {currentTool === 'calculator' && (
                   <CalculatorPanel
+                    key={calcPreselect ?? 'default'}
                     profile={profile}
                     preselect={calcPreselect}
                     onOpenAgent={() => openTool('agent')}
@@ -1370,7 +1394,16 @@ export default function PolicyBrainPage({ onBack }) {
           )}
 
         </div>{/* /main */}
-      </div>{/* /layout */}
+      </div>
+      ) : activeModuleView === 'news' ? (
+        <div className="flex-1 overflow-y-auto">
+          <PolicyTrackerView profile={profile} />
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <PolicyImpactView profile={profile} />
+        </div>
+      )}
     </div> /* /pb-shell */
   );
 }

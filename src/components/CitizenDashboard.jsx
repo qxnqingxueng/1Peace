@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import MapDashboard from './MapDashboard'; 
 
 const PHASES = { POLICY: '1_POLICY_BRAIN', WARNING: '2_DISASTER_WARNING', LIVEOPS: '3_LIVE_OPS', AID: '4_AID_COPILOT' };
@@ -41,7 +41,7 @@ export default function CitizenDashboard() {
         <div className="flex-grow relative">
           <AnimatePresence mode="wait">
             {currentPhase === PHASES.POLICY && (
-              <motion.div key="phase1" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
+              <Motion.div key="phase1" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
                   <h3 className="text-sm uppercase tracking-widest text-[#FFCC00] mb-2 font-bold">Policy Brain Active</h3>
                   <p className="text-sm leading-relaxed text-white/80">
@@ -51,11 +51,11 @@ export default function CitizenDashboard() {
                 <button onClick={() => setCurrentPhase(PHASES.WARNING)} className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/15 text-sm font-bold">
                   Simulate Incoming Storm ⛈️
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
 
             {currentPhase === PHASES.WARNING && (
-              <motion.div key="phase2" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
+              <Motion.div key="phase2" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-red-900/20 border border-red-500/50 ring-1 ring-red-500 shadow-[0_0_15px_rgba(237,28,36,0.2)]">
                   <h3 className="text-sm uppercase tracking-widest text-[#ED1C24] mb-2 font-bold animate-pulse">Disaster Twin Warning</h3>
                   <p className="text-sm leading-relaxed text-white/85">
@@ -65,11 +65,11 @@ export default function CitizenDashboard() {
                 <button onClick={() => setCurrentPhase(PHASES.LIVEOPS)} className="w-full py-4 rounded-xl bg-[#ED1C24] hover:bg-red-600 transition-colors text-white text-sm font-bold shadow-lg shadow-red-500/30">
                   Flood Hits Home 🌊
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
 
             {currentPhase === PHASES.LIVEOPS && (
-              <motion.div key="phase3" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
+              <Motion.div key="phase3" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white/5 border border-[#FFCC00]/30">
                   <h3 className="text-sm uppercase tracking-widest text-[#FFCC00] mb-2 font-bold">Live Ops Initiated</h3>
                   <p className="text-sm leading-relaxed text-white/80">
@@ -79,11 +79,11 @@ export default function CitizenDashboard() {
                 <button onClick={() => setCurrentPhase(PHASES.AID)} className="w-full py-4 rounded-xl bg-[#FFCC00] hover:bg-yellow-500 transition-colors text-black text-sm font-bold shadow-lg shadow-yellow-500/20 mt-8">
                   Apply for Relief
                 </button>
-              </motion.div>
+              </Motion.div>
             )}
 
             {currentPhase === PHASES.AID && (
-              <motion.div key="phase4" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6 flex flex-col h-full justify-center">
+              <Motion.div key="phase4" variants={panelVariants} initial="initial" animate="animate" exit="exit" className="space-y-6 flex flex-col h-full justify-center">
                 <h3 className="text-xl font-bold text-white mb-2">Aid Copilot</h3>
                 
                 {aidState.status === 'idle' && (
@@ -101,7 +101,7 @@ export default function CitizenDashboard() {
                 )}
 
                 {aidState.status === 'success' && (
-                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-5 rounded-2xl bg-[#ED1C24]/10 border border-[#ED1C24]/40">
+                  <Motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-5 rounded-2xl bg-[#ED1C24]/10 border border-[#ED1C24]/40">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-8 rounded-full bg-[#FFCC00] flex items-center justify-center text-black font-bold">✓</div>
                       <h4 className="font-bold text-[#FFCC00]">Claim Approved</h4>
@@ -110,9 +110,9 @@ export default function CitizenDashboard() {
                     <button onClick={() => { setCurrentPhase(PHASES.POLICY); setAidState({status: 'idle', response: null}); }} className="mt-6 text-xs text-white/60 hover:text-[#FFCC00] underline underline-offset-4">
                       Reset Journey to Peace-time
                     </button>
-                  </motion.div>
+                  </Motion.div>
                 )}
-              </motion.div>
+              </Motion.div>
             )}
           </AnimatePresence>
         </div>

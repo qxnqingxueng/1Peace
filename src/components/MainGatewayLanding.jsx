@@ -23,23 +23,19 @@ const UNIQUE_ICON_SOURCES = [
   '/landing-icons/wave.gif',
 ];
 
-const LANDING_ICONS = UNIQUE_ICON_SOURCES.map((src, index) => {
-  const iconNumber = index + 1;
-  const oddOrder = Math.floor(index / 2);
-  const evenOrder = Math.floor((index - 1) / 2);
-  const phaseDelay = iconNumber % 2 === 1 ? oddOrder * 0.05 : 0.62 + evenOrder * 0.05;
-  const pairIndex = Math.floor(index / 2);
-  const pairBaseLeft = 4 + pairIndex * 10.2;
-  const pairOffset = iconNumber % 2 === 1 ? 0 : 4.9;
-
+const LANDING_ICONS = Array.from({ length: 42 }, (_, index) => {
+  const source = UNIQUE_ICON_SOURCES[index % UNIQUE_ICON_SOURCES.length];
+  const size = 48 + Math.floor(Math.random() * 34);
   return {
-    id: `icon-${iconNumber}`,
-    src,
-    left: `${pairBaseLeft + pairOffset}%`,
-    size: index % 5 === 0 ? 82 : index % 4 === 0 ? 76 : index % 3 === 0 ? 72 : 68,
-    settleY: [-10, 6, -4, 5, -8, 7, -6, 4, -7][index % 9],
-    delay: phaseDelay,
-    driftX: (index % 2 === 0 ? 1 : -1) * (18 + (index % 4) * 5),
+    id: `icon-${index + 1}`,
+    src: source,
+    left: `${Math.random() * 100}%`,
+    size,
+    delay: -1 * (Math.random() * 12),
+    duration: 5.5 + Math.random() * 6,
+    driftX: (Math.random() * 66 - 33).toFixed(1),
+    rotate: Math.random() * 420 - 210,
+    opacity: 0.52 + Math.random() * 0.4,
   };
 });
 
@@ -112,7 +108,7 @@ function IconDropBand() {
           src={icon.src}
           alt=""
           aria-hidden="true"
-          className={`pointer-events-auto select-none mix-blend-multiply ${followIconId === icon.id ? '' : 'absolute bottom-4'}`}
+          className={`pointer-events-auto select-none mix-blend-multiply ${followIconId === icon.id ? '' : 'absolute'}`}
           style={
             followIconId === icon.id
               ? {
@@ -123,24 +119,24 @@ function IconDropBand() {
                   height: icon.size,
                   zIndex: 12,
                 }
-              : { left: icon.left, width: icon.size, height: icon.size, zIndex: 10 }
+              : { left: icon.left, top: '-12vh', width: icon.size, height: icon.size, opacity: icon.opacity, zIndex: 10 }
           }
           initial={
             prefersReducedMotion
-              ? { y: icon.settleY, x: 0, opacity: 1, rotate: 0 }
-              : { y: -980, x: icon.driftX, opacity: 0, rotate: icon.driftX > 0 ? 6 : -6 }
+              ? { y: 0, x: 0, opacity: icon.opacity, rotate: 0 }
+              : { y: '-8vh', x: 0, opacity: 0, rotate: 0 }
           }
           animate={
             followIconId === icon.id
               ? { opacity: 1, scale: 1.08, rotate: 0, zIndex: 12 }
               : prefersReducedMotion
-                ? { y: icon.settleY, x: 0, opacity: 1, scale: 1, rotate: 0, zIndex: 10 }
+                ? { y: 0, x: 0, opacity: icon.opacity, scale: 1, rotate: 0, zIndex: 10 }
                 : {
-                    y: [-980, icon.settleY + 26, icon.settleY - 14, icon.settleY + 8, icon.settleY],
-                    x: [icon.driftX, icon.driftX * -0.18, icon.driftX * 0.1, 0],
-                    opacity: [0, 1, 1, 1, 1],
-                    scale: [0.92, 1.03, 0.99, 1.01, 1],
-                    rotate: [icon.driftX > 0 ? 8 : -8, icon.driftX > 0 ? -4 : 4, 2, -1, 0],
+                    y: ['-8vh', '100vh'],
+                    x: [0, Number(icon.driftX)],
+                    opacity: [0, icon.opacity, icon.opacity, 0],
+                    scale: [0.92, 1.02, 1],
+                    rotate: [0, icon.rotate],
                     zIndex: 10,
                   }
           }
@@ -148,11 +144,18 @@ function IconDropBand() {
             prefersReducedMotion
               ? { duration: 0 }
               : {
-                  y: { duration: 1.5, delay: icon.delay, times: [0, 0.72, 0.86, 0.94, 1], ease: 'easeOut' },
-                  x: { duration: 1.5, delay: icon.delay, times: [0, 0.4, 0.72, 1], ease: 'easeOut' },
-                  opacity: { duration: 0.18, delay: icon.delay },
-                  scale: { duration: 1.5, delay: icon.delay, times: [0, 0.72, 0.86, 0.94, 1] },
-                  rotate: { duration: 1.5, delay: icon.delay, times: [0, 0.62, 0.8, 0.94, 1] },
+                  y: { duration: icon.duration, delay: icon.delay, ease: 'linear', repeat: Infinity, repeatDelay: 0 },
+                  x: { duration: icon.duration, delay: icon.delay, ease: 'linear', repeat: Infinity, repeatDelay: 0 },
+                  opacity: {
+                    duration: icon.duration,
+                    delay: icon.delay,
+                    ease: 'linear',
+                    times: [0, 0.08, 0.98, 1],
+                    repeat: Infinity,
+                    repeatDelay: 0,
+                  },
+                  scale: { duration: icon.duration, delay: icon.delay, ease: 'linear', repeat: Infinity, repeatDelay: 0 },
+                  rotate: { duration: icon.duration, delay: icon.delay, ease: 'linear', repeat: Infinity, repeatDelay: 0 },
                 }
           }
           onClick={(event) => {
@@ -170,9 +173,7 @@ export default function MainGatewayLanding({ onLaunch }) {
   useModeTheme('landing');
 
   return (
-    <main className="landing-page relative min-h-screen overflow-hidden px-6 pb-44 pt-12 text-slate-950 md:px-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(11,19,43,0.06),transparent_35%),radial-gradient(circle_at_80%_8%,rgba(237,28,36,0.07),transparent_28%),radial-gradient(circle_at_60%_75%,rgba(255,204,0,0.12),transparent_30%)]" />
-
+    <main className="landing-page relative min-h-screen overflow-hidden bg-white px-6 pb-44 pt-12 text-slate-950 md:px-10">
       <section className="relative z-30 mx-auto w-full max-w-6xl">
         <header className="mx-auto max-w-3xl text-center">
           <h1 className="landing-heading font-peace text-4xl font-bold tracking-tight text-[#0B132B] md:text-6xl">

@@ -117,6 +117,7 @@ button {
 
 .landing-page {
   isolation: isolate;
+  background: #ffffff;
 }
 
 .landing-heading {

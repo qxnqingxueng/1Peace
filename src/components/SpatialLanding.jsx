@@ -1,11 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 // --- 微动效组件：平时城市与车流 ---
 const PeaceGraphic = () => (
   <div className="relative h-48 w-full overflow-hidden rounded-t-2xl bg-gradient-to-b from-[#0A192F]/40 to-[#0A192F]/80">
     {/* 柔和的月亮/太阳 */}
-    <motion.div 
+    <Motion.div 
       className="absolute top-6 left-10 h-12 w-12 rounded-full bg-[#FFCC00]/20 blur-sm"
       animate={{ scale: [1, 1.1, 1] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -14,16 +14,16 @@ const PeaceGraphic = () => (
 
     {/* 城市建筑群 (错落有致) */}
     <div className="absolute bottom-4 flex w-full items-end justify-around px-8 opacity-60">
-      <motion.div className="w-8 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 80 }} transition={{ duration: 1 }} />
-      <motion.div className="w-12 bg-[#E2E8F0]/30 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 120 }} transition={{ duration: 1.2 }} />
-      <motion.div className="w-10 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 60 }} transition={{ duration: 0.8 }} />
-      <motion.div className="w-16 bg-[#E2E8F0]/40 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 140 }} transition={{ duration: 1.5 }} />
-      <motion.div className="w-8 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 90 }} transition={{ duration: 1.1 }} />
+      <Motion.div className="w-8 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 80 }} transition={{ duration: 1 }} />
+      <Motion.div className="w-12 bg-[#E2E8F0]/30 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 120 }} transition={{ duration: 1.2 }} />
+      <Motion.div className="w-10 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 60 }} transition={{ duration: 0.8 }} />
+      <Motion.div className="w-16 bg-[#E2E8F0]/40 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 140 }} transition={{ duration: 1.5 }} />
+      <Motion.div className="w-8 bg-[#E2E8F0]/20 rounded-t-sm" initial={{ height: 0 }} animate={{ height: 90 }} transition={{ duration: 1.1 }} />
     </div>
 
     {/* 马路与穿梭的汽车 */}
     <div className="absolute bottom-0 h-4 w-full bg-white/5 border-t border-white/10" />
-    <motion.div 
+    <Motion.div 
       className="absolute bottom-[2px] h-3 w-10 rounded-full bg-[#FFCC00]/80 shadow-[0_0_10px_rgba(255,204,0,0.5)]"
       initial={{ x: -50 }}
       animate={{ x: 600 }}
@@ -36,7 +36,7 @@ const PeaceGraphic = () => (
 const CrisisGraphic = () => (
   <div className="relative h-48 w-full overflow-hidden rounded-t-2xl bg-gradient-to-b from-[#1A0B13]/60 to-[#2A0810]/90">
     {/* 警示光晕 */}
-    <motion.div 
+    <Motion.div 
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-32 w-32 rounded-full bg-[#ED1C24]/20 blur-[40px]"
       animate={{ opacity: [0.3, 0.7, 0.3] }}
       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -45,23 +45,23 @@ const CrisisGraphic = () => (
     {/* 降雨效果 */}
     <div className="absolute inset-0 opacity-20">
       {[...Array(10)].map((_, i) => (
-        <motion.div
+        <Motion.div
           key={i}
           className="absolute w-[1px] h-8 bg-white/40 rotate-12"
           style={{ left: `${i * 10}%`, top: -40 }}
           animate={{ y: [0, 200], opacity: [0, 1, 0] }}
-          transition={{ duration: 0.6 + Math.random(), repeat: Infinity, ease: "linear", delay: Math.random() }}
+          transition={{ duration: 0.7 + (i % 4) * 0.2, repeat: Infinity, ease: "linear", delay: i * 0.08 }}
         />
       ))}
     </div>
 
     {/* 动态海啸/洪水波浪 (交叠起伏) */}
-    <motion.div 
+    <Motion.div 
       className="absolute -bottom-10 -left-10 h-32 w-[150%] rounded-[100%] bg-[#0B5394]/60 mix-blend-screen"
       animate={{ x: [-20, -50, -20], y: [0, -15, 0] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     />
-    <motion.div 
+    <Motion.div 
       className="absolute -bottom-16 -left-20 h-40 w-[160%] rounded-[100%] bg-[#ED1C24]/30 mix-blend-screen"
       animate={{ x: [-50, -10, -50], y: [0, -20, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -103,7 +103,7 @@ export default function SpatialLanding({ onLaunch }) {
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
         
         {/* 主标题区 */}
-        <motion.div 
+        <Motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -115,12 +115,12 @@ export default function SpatialLanding({ onLaunch }) {
           <p className="text-white/60 max-w-xl mx-auto text-sm md:text-base">
             Bridging the gap between everyday policy transparency and autonomous disaster resilience.
           </p>
-        </motion.div>
+        </Motion.div>
 
         {/* 双卡片并排布局 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
           {cards.map((card, idx) => (
-            <motion.div
+            <Motion.div
               key={card.id}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -151,7 +151,7 @@ export default function SpatialLanding({ onLaunch }) {
                   Enter {card.title} →
                 </button>
               </div>
-            </motion.div>
+            </Motion.div>
           ))}
         </div>
 
