@@ -4,61 +4,27 @@ import PolicyBrainPage from './components/PolicyBrainPage';
 import CrisisOpsPage from './components/CrisisOpsPage';
 
 const pathways = [
-  {
-    id: '01',
-    path: '/policy-brain',
-    name: 'Policy Brain',
-    stage: 'Before',
-    accent: 'gold',
-    blurb: 'Read policy shifts in plain language and preview how household outcomes change before a flood season starts.',
-    // ... keep your other properties if your PathwayPage needs them
-  },
-  {
-    id: '02',
-    path: '/disaster-twin',
-    name: 'Disaster Twin',
-    stage: 'During',
-    accent: 'red',
-    blurb: 'Open a spatial incident view with flood depth, shelter routing, and fast guidance when conditions are already moving.',
-  },
-  {
-    id: '03',
-    path: '/aid-copilot',
-    name: 'Aid Copilot',
-    stage: 'After',
-    accent: 'gold',
-    blurb: 'Assist users to process and submit relief support requests.',
-  },
-  {
-    id: '04',
-    path: '/recovery-ledger',
-    name: 'Recovery',
-    stage: 'Recovery',
-    accent: 'red',
-    blurb: 'Track aid progress and post-disaster rebuilding timeline.',
-  },
+  { id: '01', path: '/policy-brain',    name: 'Policy Brain',   stage: 'Before',   accent: 'gold' },
+  { id: '02', path: '/disaster-twin',   name: 'Disaster Twin',  stage: 'During',   accent: 'red'  },
+  { id: '03', path: '/aid-copilot',     name: 'Aid Copilot',    stage: 'After',    accent: 'gold' },
+  { id: '04', path: '/recovery-ledger', name: 'Recovery',       stage: 'Recovery', accent: 'red'  },
 ];
 
 const knownPaths = new Set(pathways.map((item) => item.path));
 
 function getRouteFromHash() {
   const hash = window.location.hash.replace(/^#/, '');
-  if (!hash || hash === '/') {
-    return '/';
-  }
+  if (\!hash || hash === '/') return '/';
   return knownPaths.has(hash) ? hash : '/';
 }
 
-// Keep your PathwayPage component exactly as it is
-function PathwayPage({ route, onNavigate }) {
+function PathwayPage({ route, onNavigate, userProfile }) {
   if (route === '/policy-brain') {
-    return <PolicyBrainPage onBack={() => onNavigate('/')} />;
+    return <PolicyBrainPage onBack={() => onNavigate('/')} userProfile={userProfile} />;
   }
-
   if (route === '/disaster-twin') {
-    return <CrisisOpsPage onBack={() => onNavigate('/')} />;
+    return <CrisisOpsPage onBack={() => onNavigate('/')} userProfile={userProfile} />;
   }
-
   return (
     <main className="main-shell route-shell">
       <h1>Placeholder for Pathway: {route}</h1>
@@ -69,15 +35,14 @@ function PathwayPage({ route, onNavigate }) {
 
 function App() {
   const [route, setRoute] = useState(() => getRouteFromHash());
+  const [userProfile, setUserProfile] = useState(null);
 
-  // Listen for URL hash changes
   useEffect(() => {
     const onHashChange = () => setRoute(getRouteFromHash());
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // Your clean navigation handler
   const navigate = useMemo(
     () => (path) => {
       const normalized = path === '/' ? '/' : knownPaths.has(path) ? path : '/';
@@ -86,22 +51,22 @@ function App() {
     [],
   );
 
-  // If we are not on the main page, show the specific pathway
-  if (route !== '/') {
-    return <PathwayPage route={route} onNavigate={navigate} />;
+  if (route \!== '/') {
+    return <PathwayPage route={route} onNavigate={navigate} userProfile={userProfile} />;
   }
 
-  // Map the 2-Card Landing Page clicks to your routes
   const handleLaunch = (cardId) => {
-    if (cardId === 'PEACE') {
-      navigate('/policy-brain'); // Routes to Category 1
-    } else if (cardId === 'CRISIS') {
-      navigate('/disaster-twin'); // Routes to Category 2
-    }
+    if (cardId === 'PEACE')  navigate('/policy-brain');
+    if (cardId === 'CRISIS') navigate('/disaster-twin');
   };
 
-  // Render the two-card gateway page when on '/'
-  return <MainGatewayLanding onLaunch={handleLaunch} />;
+  return (
+    <MainGatewayLanding
+      onLaunch={handleLaunch}
+      onAuthComplete={setUserProfile}
+      userProfile={userProfile}
+    />
+  );
 }
 
 export default App;

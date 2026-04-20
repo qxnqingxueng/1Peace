@@ -39,7 +39,7 @@ const CSS = `
 .pb-shell .brand{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;border:none;background:none;}
 .pb-shell .brand-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--gold);box-shadow:0 2px 8px rgba(0,51,153,.3);}
 .pb-shell .brand-name{font-weight:800;font-size:16px;color:var(--blue);}
-.pb-shell .brand-name span{color:var(--red);}
+.pb-shell .brand-name span{color:#F7C800;}
 .pb-shell .topbar-right{display:flex;align-items:center;gap:10px;}
 .pb-shell .topbar-nav{display:flex;gap:2px;background:var(--surface);border-radius:20px;padding:3px;border:1px solid var(--border);}
 .pb-shell .tn-btn{padding:3px 11px;border-radius:14px;border:none;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);background:transparent;transition:all .15s;}
@@ -275,7 +275,7 @@ const CSS = `
 .pb-auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:28px;}
 .pb-auth-mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:var(--gold);box-shadow:0 4px 14px rgba(0,51,153,.3);}
 .pb-auth-wordmark{font-weight:900;font-size:22px;color:var(--blue);}
-.pb-auth-wordmark span{color:var(--red);}
+.pb-auth-wordmark span{color:#F7C800;}
 .pb-auth-heading{font-size:26px;font-weight:800;color:var(--dark);text-align:center;margin-bottom:6px;}
 .pb-auth-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto;}
 .pb-google-btn{width:100%;height:48px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;color:var(--dark);cursor:pointer;transition:all .2s;box-shadow:var(--shadow-sm);}
@@ -813,7 +813,7 @@ function AgentPanel() {
 /* ─────────────────────────────────────────────────────────────────────────────
    MAIN EXPORT
 ───────────────────────────────────────────────────────────────────────────── */
-export default function PolicyBrainPage({ onBack }) {
+export default function PolicyBrainPage({ onBack, userProfile }) {
   /* ── CSS injection ── */
   useEffect(() => {
     const el = document.createElement('style');
@@ -840,6 +840,23 @@ export default function PolicyBrainPage({ onBack }) {
   const [profileError, setProfileError] = useState('');
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  /* ── Aid calculation from userProfile ── */
+  const aidResult = (() => {
+    const p = userProfile;
+    if (!p) return { total: 4900, count: 5 }; // fallback display when no profile
+    const incomeMap = { '<1500': 1000, '1500-2500': 2000, '2500-4000': 3250, '4000-5000': 4500, '>5000': 6000 };
+    const sizeMap   = { '1': 1, '2': 2, '3-4': 3.5, '5+': 6 };
+    const income    = incomeMap[p.income] ?? 3000;
+    const size      = sizeMap[p.householdSize] ?? 3;
+    const perCapita = income / size;
+    let total = 0, count = 0;
+    if (income < 5000)             { total += income < 2500 ? 2400 : income < 3500 ? 2100 : 1800; count++; }
+    if (perCapita < 1169)          { total += 960;  count++; }
+    if (p.hasSchoolKids === 'yes') { total += 200;  count++; }
+    if (p.hasOKU === 'yes')        { total += 3600; count++; }
+    return { total, count };
+  })();
 
   /* ── Chat state ── */
   const [messages, setMessages] = useState([]);
@@ -1067,8 +1084,16 @@ export default function PolicyBrainPage({ onBack }) {
   };
 
   const profileTagLine = `${profile.incomeGroup} · ${profile.state} · ${profile.householdType} · ${profile.vehicleType || 'Diesel'}`;
-  const displayName = user?.displayName || 'You';
+  const displayName = user?.displayName || userProfile?.name || 'You';
   const initials = displayName.charAt(0).toUpperCase();
+
+  const INCOME_GROUP = { '<1500': 'B40', '1500-2500': 'B40', '2500-4000': 'M40', '4000-5000': 'M40', '>5000': 'T20' };
+  const trackerProfile = user ? profile : userProfile ? {
+    incomeGroup:   INCOME_GROUP[userProfile.income] || 'B40',
+    householdType: userProfile.employment || '',
+    state: '',
+    dependants: 0,
+  } : null;
 
   /* ── Loading state ── */
   if (authInitializing) {
@@ -1145,10 +1170,6 @@ export default function PolicyBrainPage({ onBack }) {
               </button>
             ))}
           </div>
-          <div className="lang-pill">
-            <button className={`lp-btn${lang === 'en' ? ' active' : ''}`} onClick={() => setLang('en')}>EN</button>
-            <button className={`lp-btn${lang === 'bm' ? ' active' : ''}`} onClick={() => setLang('bm')}>BM</button>
-          </div>
           {user ? (
             <button className="topbar-profile" onClick={() => setIsSettingsOpen(true)}>
               <div className="tp-avatar">{initials}</div>
@@ -1157,6 +1178,14 @@ export default function PolicyBrainPage({ onBack }) {
                 <div className="tp-tag">{profile.incomeGroup} · {profile.state}</div>
               </div>
             </button>
+          ) : userProfile ? (
+            <div className="topbar-profile" style={{ cursor: 'default' }}>
+              <div className="tp-avatar">{initials}</div>
+              <div>
+                <div className="tp-name">{displayName.split(' ')[0]}</div>
+                <div className="tp-tag">{INCOME_GROUP[userProfile.income] || 'B40'}</div>
+              </div>
+            </div>
           ) : (
             <button
               style={{ padding: '6px 14px', borderRadius: 10, border: '1.5px solid var(--blue)', background: 'var(--blue)', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
@@ -1173,10 +1202,16 @@ export default function PolicyBrainPage({ onBack }) {
 
         {/* ── Sidebar ── */}
         <div className="sidebar">
+          <button
+            onClick={onBack}
+            style={{ display:'flex', alignItems:'center', gap:6, padding:'10px 14px', border:'none', background:'none', cursor:'pointer', color:'var(--muted)', fontSize:13, fontWeight:600, width:'100%', textAlign:'left' }}
+          >
+            <span style={{ fontSize:16 }}>←</span> Back
+          </button>
           <div className="aid-wallet" onClick={() => openTool('agent')}>
             <div className="aw-label">Your eligible aid</div>
-            <div className="aw-amount">RM 4,900</div>
-            <div className="aw-sub">per year across 5 programmes</div>
+            <div className="aw-amount">RM {aidResult.total.toLocaleString()}</div>
+            <div className="aw-sub">per year across {aidResult.count} programme{aidResult.count !== 1 ? 's' : ''}</div>
             <div className="aw-hint">Tap to see breakdown →</div>
           </div>
 
@@ -1240,7 +1275,7 @@ export default function PolicyBrainPage({ onBack }) {
                 {messages.length === 0 && (
                   <div className="welcome-screen">
                     <div className="welcome-logo">1P</div>
-                    <div className="welcome-greeting">Selamat datang{user ? `, ${displayName.split(' ')[0]}` : ''} 👋</div>
+                    <div className="welcome-greeting">Welcome{user ? `, ${displayName.split(' ')[0]}` : ''} 👋</div>
                     <h2>Ask anything about Malaysian policy</h2>
                     <p>I explain bills in plain language, calculate how policies affect your finances, and help you apply for aid — all in one place.</p>
                     <div className="quick-actions">
@@ -1397,7 +1432,7 @@ export default function PolicyBrainPage({ onBack }) {
       </div>
       ) : activeModuleView === 'news' ? (
         <div className="flex-1 overflow-y-auto">
-          <PolicyTrackerView profile={profile} />
+          <PolicyTrackerView profile={trackerProfile} />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">

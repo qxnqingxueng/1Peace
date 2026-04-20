@@ -5,12 +5,33 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import DeckGL from '@deck.gl/react';
 import { ColumnLayer, PolygonLayer, ScatterplotLayer, PathLayer } from '@deck.gl/layers';
 
-const INITIAL_VIEW_STATE = {
-  longitude: 100.3696,
-  latitude: 5.3941,
-  zoom: 12,
-  pitch: 45,
-  bearing: 0,
+const BASE_VIEW = { longitude: 100.3696, latitude: 5.3941, bearing: 0 };
+
+// Per-tab pitch and zoom
+const VIEW_CONFIGS = {
+  '3D':        { ...BASE_VIEW, zoom: 12, pitch: 45 },
+  'Satellite': { ...BASE_VIEW, zoom: 13, pitch: 0  },
+  'Heatmap':   { ...BASE_VIEW, zoom: 12, pitch: 0  },
+};
+
+// Satellite uses an inline ESRI raster style (no API key required)
+const SATELLITE_STYLE = {
+  version: 8,
+  sources: {
+    esri: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256,
+      attribution: 'Esri World Imagery',
+    },
+  },
+  layers: [{ id: 'esri-bg', type: 'raster', source: 'esri' }],
+};
+
+const MAP_STYLES = {
+  '3D':        'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+  'Satellite': SATELLITE_STYLE,
+  'Heatmap':   'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
 };
 
 /* ── PEACE MODE DATA ────────────────────────────────────────────────────── */
@@ -49,11 +70,17 @@ const ESCAPE_ROUTES = [
      appMode     'PEACE' | 'CRISIS'
      selectedPPS  0 | 1 | 2   — which PPS is active (CRISIS only)
      layers       { flood, pps, route, radar, road }  — layer visibility flags
+     mapView      '3D' | 'Satellite' | 'Heatmap'
 ───────────────────────────────────────────────────────────────────────── */
-export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layers = {} }) {
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layers = {}, mapView = '3D' }) {
+  const [viewState, setViewState] = useState(VIEW_CONFIGS['3D']);
   const [tooltip, setTooltip]     = useState(null);
   const [time, setTime]           = useState(0);
+
+  // Update pitch + zoom when the user switches map view tab
+  useEffect(() => {
+    setViewState((v) => ({ ...v, pitch: VIEW_CONFIGS[mapView].pitch, zoom: VIEW_CONFIGS[mapView].zoom }));
+  }, [mapView]);
 
   // Pulse animation for CRISIS mode
   useEffect(() => {
@@ -105,6 +132,9 @@ export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layer
       const result = [];
 
       if (layers.flood !== false) {
+        // Heatmap tab uses a warm red-orange tint to feel like a heat layer
+        const floodFill = mapView === 'Heatmap' ? [220, 60, 0, 160] : [0, 100, 255, 140];
+        const floodLine = mapView === 'Heatmap' ? [200, 40, 0, 255] : [0, 80, 200, 255];
         result.push(
           new PolygonLayer({
             id: 'flood-zone',
@@ -113,9 +143,10 @@ export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layer
             stroked: true,
             filled: true,
             getPolygon: (d) => d.polygon,
-            getFillColor: [0, 100, 255, 140],
-            getLineColor: [0, 80, 200, 255],
+            getFillColor: floodFill,
+            getLineColor: floodLine,
             lineWidthMinPixels: 1,
+            updateTriggers: { getFillColor: [mapView], getLineColor: [mapView] },
           }),
         );
       }
@@ -164,13 +195,13 @@ export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layer
     }
 
     return [];
-  }, [appMode, time, selectedPPS, layers]);
+  }, [appMode, time, selectedPPS, layers, mapView]);
 
   return (
     <div className="relative h-full w-full bg-[#06101e] font-crisis antialiased">
       <DeckGL
         layers={deckLayers}
-        initialViewState={viewState}
+        viewState={viewState}
         onViewStateChange={({ viewState: vs }) => setViewState(vs)}
         controller
         onClick={handleClick}
@@ -178,7 +209,7 @@ export default function MapDashboard({ appMode = 'PEACE', selectedPPS = 0, layer
         <Map
           reuseMaps
           mapLib={maplibregl}
-          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+          mapStyle={MAP_STYLES[mapView] ?? MAP_STYLES['3D']}
         />
       </DeckGL>
 

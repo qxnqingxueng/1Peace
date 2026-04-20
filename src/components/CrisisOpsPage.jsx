@@ -53,8 +53,8 @@ const CSS = `
   font-weight: 900; font-size: 12px; color: var(--cr-gold);
   box-shadow: 0 2px 8px rgba(0,51,153,.4);
 }
-.co-shell .brand-name { font-weight: 800; font-size: 15px; color: var(--cr-text); }
-.co-shell .brand-name span { color: var(--cr-red); }
+.co-shell .brand-name { font-weight: 800; font-size: 15px; color: #003399; }
+.co-shell .brand-name span { color: #F7C800; }
 .co-shell .topbar-sep { width: 1px; height: 22px; background: var(--cr-border); flex-shrink: 0; }
 .co-shell .crisis-pill {
   display: flex; align-items: center; gap: 5px;
@@ -318,7 +318,199 @@ const CSS = `
 
 /* MAP WRAPPER */
 .co-shell .map-wrap { flex: 1; overflow: hidden; position: relative; min-width: 0; }
+
+/* TAB BAR */
+.co-shell .tab-bar {
+  display: flex; height: 40px; flex-shrink: 0;
+  background: var(--cr-surface);
+  border-bottom: 1px solid var(--cr-border);
+}
+.co-shell .tab-btn {
+  flex: 1; border: none; background: transparent;
+  font-size: 12px; font-weight: 600; color: var(--cr-muted);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.04em;
+}
+.co-shell .tab-btn:hover { color: var(--cr-text); }
+.co-shell .tab-btn.active { color: var(--cr-accent); border-bottom-color: var(--cr-accent); }
+
+/* CLAIM AID PAGE */
+.co-shell .aid-layout {
+  display: flex; flex: 1; overflow: hidden;
+}
+.co-shell .aid-col {
+  width: 400px; min-width: 400px; flex-shrink: 0;
+  background: var(--cr-surface);
+  border-right: 1px solid var(--cr-border);
+  overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.co-shell .aid-col::-webkit-scrollbar { width: 3px; }
+.co-shell .aid-col::-webkit-scrollbar-thumb { background: var(--cr-border); }
+.co-shell .aid-chat-col {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--cr-bg);
+}
+.co-shell .upload-zone {
+  border: 2px dashed rgba(59,130,246,0.35);
+  border-radius: 12px; padding: 24px 16px;
+  text-align: center; cursor: pointer;
+  background: rgba(59,130,246,0.04);
+  transition: border-color 0.15s, background 0.15s;
+}
+.co-shell .upload-zone:hover { border-color: var(--cr-accent); background: rgba(59,130,246,0.08); }
+.co-shell .upload-icon { font-size: 28px; margin-bottom: 6px; }
+.co-shell .upload-title { font-size: 13px; font-weight: 600; color: var(--cr-text); margin-bottom: 3px; }
+.co-shell .upload-sub { font-size: 11px; color: var(--cr-muted); }
+.co-shell .thumbs { display: flex; gap: 8px; }
+.co-shell .thumb {
+  flex: 1; aspect-ratio: 1; border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--cr-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.co-shell .thumb.selected { border-color: var(--cr-accent); background: rgba(59,130,246,0.1); }
+.co-shell .extract-card {
+  background: rgba(34,197,94,0.06);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 10px; padding: 12px;
+}
+.co-shell .extract-hdr { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font-size: 11px; font-weight: 700; color: #4ade80; letter-spacing: 0.08em; text-transform: uppercase; }
+.co-shell .extract-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.co-shell .extract-row:last-child { border-bottom: none; }
+.co-shell .extract-key { color: var(--cr-muted); }
+.co-shell .extract-val { color: var(--cr-text); font-weight: 600; }
+.co-shell .checklist { display: flex; flex-direction: column; gap: 6px; }
+.co-shell .check-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--cr-dim); }
+.co-shell .check-icon { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+.co-shell .ci-pass { background: rgba(34,197,94,0.15); color: #4ade80; }
+.co-shell .ci-fail { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.co-shell .aid-chat-msgs {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.co-shell .aid-chat-msgs::-webkit-scrollbar { width: 3px; }
+.co-shell .aid-chat-msgs::-webkit-scrollbar-thumb { background: var(--cr-border); }
+.co-shell .agent-step {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--cr-border);
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 11px; color: var(--cr-dim);
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.co-shell .step-icon { font-size: 14px; flex-shrink: 0; }
+.co-shell .step-body { flex: 1; }
+.co-shell .step-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cr-muted); margin-bottom: 2px; }
+.co-shell .step-done { color: #4ade80; }
+.co-shell .step-spin { display: inline-block; animation: co-spin 1s linear infinite; }
+@keyframes co-spin { to { transform: rotate(360deg); } }
+.co-shell .success-card {
+  margin: 0 16px 16px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.35);
+  border-radius: 12px; padding: 16px;
+}
+.co-shell .sc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.co-shell .sc-icon { font-size: 22px; }
+.co-shell .sc-title { font-size: 14px; font-weight: 800; color: #4ade80; }
+.co-shell .sc-sub { font-size: 11px; color: var(--cr-muted); }
+.co-shell .sc-amount { font-size: 28px; font-weight: 900; color: #4ade80; margin-bottom: 8px; }
+.co-shell .sc-meta { font-size: 10px; color: var(--cr-muted); display: flex; gap: 12px; }
+.co-shell .sc-meta span { color: var(--cr-dim); }
+
+/* DISASTER GUIDE PAGE */
+.co-shell .guide-layout { display: flex; flex: 1; overflow: hidden; }
+.co-shell .guide-main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--cr-bg);
+}
+.co-shell .guide-msgs {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  max-width: 800px; width: 100%; margin: 0 auto; align-self: center;
+}
+.co-shell .guide-msgs { width: 100%; }
+.co-shell .guide-main > .guide-msgs { max-width: 100%; }
+.co-shell .gmsg-user {
+  align-self: flex-end; max-width: 60%;
+  background: rgba(59,130,246,0.16);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 12px 12px 3px 12px;
+  padding: 10px 14px; font-size: 13px; color: var(--cr-text);
+}
+.co-shell .gmsg-ai {
+  align-self: flex-start; max-width: 75%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--cr-border);
+  border-radius: 12px 12px 12px 3px;
+  padding: 12px 14px; font-size: 13px; color: var(--cr-dim); line-height: 1.65;
+}
+.co-shell .gmsg-ai strong { color: var(--cr-text); }
+.co-shell .gmsg-ai-hdr { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 10px; font-weight: 700; color: #60a5fa; letter-spacing: 0.1em; text-transform: uppercase; }
+.co-shell .citations { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.co-shell .citation-chip {
+  font-size: 10px; padding: 2px 8px; border-radius: 5px;
+  background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.28);
+  color: #93c5fd; cursor: pointer; transition: background 0.15s;
+}
+.co-shell .citation-chip:hover { background: rgba(59,130,246,0.2); }
+.co-shell .grounded-tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 5px;
+  background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+  color: #86efac;
+}
+.co-shell .guide-input-row {
+  padding: 12px 16px; border-top: 1px solid var(--cr-border);
+  background: var(--cr-surface);
+  display: flex; gap: 8px;
+}
+.co-shell .guide-input {
+  flex: 1; background: rgba(255,255,255,0.04);
+  border: 1px solid var(--cr-border); border-radius: 9px;
+  padding: 8px 12px; font-size: 12px; color: var(--cr-text);
+  outline: none; transition: border-color 0.15s;
+}
+.co-shell .guide-input:focus { border-color: var(--cr-accent); }
+.co-shell .guide-input::placeholder { color: var(--cr-muted); }
+.co-shell .guide-send {
+  padding: 8px 14px; border-radius: 9px;
+  background: var(--cr-accent); border: none;
+  color: white; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.co-shell .guide-send:hover { opacity: 0.85; }
+.co-shell .guide-sources {
+  width: 300px; min-width: 300px; flex-shrink: 0;
+  background: var(--cr-surface);
+  border-left: 1px solid var(--cr-border);
+  overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.co-shell .guide-sources::-webkit-scrollbar { width: 3px; }
+.co-shell .guide-sources::-webkit-scrollbar-thumb { background: var(--cr-border); }
+.co-shell .vertex-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 8px;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.2);
+  font-size: 10px; font-weight: 700; color: #93c5fd;
+  letter-spacing: 0.06em;
+}
+.co-shell .src-doc {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--cr-border);
+  border-radius: 9px; padding: 10px 11px;
+}
+.co-shell .src-doc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; }
+.co-shell .src-doc-name { font-size: 11px; font-weight: 600; color: var(--cr-text); line-height: 1.3; }
+.co-shell .src-relevance { font-size: 10px; font-weight: 700; color: #4ade80; flex-shrink: 0; margin-left: 6px; }
+.co-shell .src-doc-org { font-size: 10px; color: var(--cr-muted); margin-bottom: 5px; }
+.co-shell .src-doc-snippet { font-size: 11px; color: var(--cr-dim); line-height: 1.55; }
 `;
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    HARDCODED PPS DATA — 3 shelters, each with its own route + AI brief
@@ -401,7 +593,7 @@ const FORECAST = [
 /* ─────────────────────────────────────────────────────────────────────────────
    COMPONENT
 ───────────────────────────────────────────────────────────────────────────── */
-export default function CrisisOpsPage({ onBack }) {
+export default function CrisisOpsPage({ onBack, userProfile }) {
   useModeTheme('crisis');
 
   const [leftOpen,   setLeftOpen]   = useState(true);
@@ -410,6 +602,7 @@ export default function CrisisOpsPage({ onBack }) {
   const [showNotif,  setShowNotif]  = useState(false);
   const [activeView, setActiveView] = useState('3D');
   const [layers, setLayers]         = useState(LAYER_DEFAULTS);
+  const [activeTab,  setActiveTab]  = useState('map');
 
   // auto-show Japan-style push alert after 1.5 s
   useEffect(() => {
@@ -448,19 +641,31 @@ export default function CrisisOpsPage({ onBack }) {
 
         <div className="topbar-spacer" />
 
-        {/* View switcher — same pill nav as PolicyBrainPage .topbar-nav */}
-        <nav className="topbar-nav">
-          {['3D', 'Satellite', 'Heatmap'].map((v) => (
-            <button
-              key={v}
-              type="button"
-              className={`tn-btn${activeView === v ? ' active' : ''}`}
-              onClick={() => setActiveView(v)}
-            >
-              {v}
-            </button>
-          ))}
-        </nav>
+        {/* User profile chip */}
+        {userProfile && (
+          <div style={{ display:'flex', alignItems:'center', gap:7, marginRight:6 }}>
+            <div style={{ width:28, height:28, borderRadius:'50%', background:'linear-gradient(135deg,#F7C800,#f59e0b)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:800, color:'#001f6b', flexShrink:0 }}>
+              {(userProfile.name || 'U').charAt(0).toUpperCase()}
+            </div>
+            <span style={{ fontSize:13, fontWeight:600, color:'var(--cr-text)' }}>{(userProfile.name || '').split(' ')[0]}</span>
+          </div>
+        )}
+
+        {/* View switcher — only shown on Live Map tab */}
+        {activeTab === 'map' && (
+          <nav className="topbar-nav">
+            {['3D', 'Satellite', 'Heatmap'].map((v) => (
+              <button
+                key={v}
+                type="button"
+                className={`tn-btn${activeView === v ? ' active' : ''}`}
+                onClick={() => setActiveView(v)}
+              >
+                {v}
+              </button>
+            ))}
+          </nav>
+        )}
 
         {/* Notification bell */}
         <button className="notif-btn" type="button" onClick={() => setShowNotif((s) => !s)}>
@@ -468,7 +673,7 @@ export default function CrisisOpsPage({ onBack }) {
           {!showNotif && <div className="notif-dot" />}
         </button>
 
-        <button className="back-btn" type="button" onClick={onBack}>← Back</button>
+        <button className="back-btn" type="button" onClick={onBack} style={{ fontSize:18, lineHeight:1 }}>←</button>
 
         {/* Japan-style push notification popup */}
         {showNotif && (
@@ -487,8 +692,26 @@ export default function CrisisOpsPage({ onBack }) {
         )}
       </header>
 
-      {/* ── BODY LAYOUT ────────────────────────────────────────────────────── */}
-      <div className="layout">
+      {/* ── TAB BAR ────────────────────────────────────────────────────────── */}
+      <div className="tab-bar">
+        {[
+          { id: 'map',   label: '🗺 Live Map'       },
+          { id: 'aid',   label: '🆘 Claim Aid'      },
+          { id: 'guide', label: '📖 Disaster Guide' },
+        ].map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            className={`tab-btn${activeTab === id ? ' active' : ''}`}
+            onClick={() => setActiveTab(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── LIVE MAP ───────────────────────────────────────────────────────── */}
+      {activeTab === 'map' && <div className="layout">
 
         {/* LEFT PANEL */}
         <aside className={`left-panel${leftOpen ? '' : ' closed'}`}>
@@ -573,7 +796,7 @@ export default function CrisisOpsPage({ onBack }) {
 
         {/* CENTER MAP */}
         <div className="map-wrap">
-          <MapDashboard appMode="CRISIS" selectedPPS={selectedPPS} layers={layers} />
+          <MapDashboard appMode="CRISIS" selectedPPS={selectedPPS} layers={layers} mapView={activeView} />
         </div>
 
         {/* Right panel collapse strip */}
@@ -658,7 +881,189 @@ export default function CrisisOpsPage({ onBack }) {
 
         </aside>
 
-      </div>
+      </div>}
+
+      {/* ── CLAIM AID ──────────────────────────────────────────────────────── */}
+      {activeTab === 'aid' && (
+        <div className="aid-layout">
+
+          {/* Left: upload + extraction */}
+          <div className="aid-col">
+            <div className="p-label">📄 Upload Documents</div>
+            <div className="upload-zone">
+              <div className="upload-icon">📸</div>
+              <div className="upload-title">Drop utility bill / IC photo here</div>
+              <div className="upload-sub">JPG, PNG, PDF · max 10 MB · Gemini reads it instantly</div>
+            </div>
+
+            <div className="p-label" style={{ marginTop: 4 }}>Recent Uploads</div>
+            <div className="thumbs">
+              <div className="thumb selected">🧾</div>
+              <div className="thumb">🪪</div>
+              <div className="thumb">📄</div>
+            </div>
+
+            <div className="p-label" style={{ marginTop: 4 }}>✦ Gemini Extraction</div>
+            <div className="extract-card">
+              <div className="extract-hdr">✓ Data Extracted</div>
+              {[
+                ['Name',    'Ahmad bin Yusof'],
+                ['IC No.',  '810432-07-5219'],
+                ['Address', 'No. 14, Jalan Bagan Luar, Butterworth'],
+                ['Bill Amt','RM 87.40 (TNB Apr 2026)'],
+              ].map(([k, v]) => (
+                <div className="extract-row" key={k}>
+                  <span className="extract-key">{k}</span>
+                  <span className="extract-val">{v}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-label" style={{ marginTop: 4 }}>✅ Eligibility Checklist</div>
+            <div className="checklist">
+              {[
+                [true,  'Malaysian Citizen (IC verified)'],
+                [true,  'Flood-affected address confirmed'],
+                [true,  'Household income ≤ RM5,000/month'],
+                [true,  'No prior BWI claim this year'],
+                [false, 'Property ownership docs (optional)'],
+              ].map(([pass, label], i) => (
+                <div className="check-item" key={i}>
+                  <div className={`check-icon ${pass ? 'ci-pass' : 'ci-fail'}`}>{pass ? '✓' : '–'}</div>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Genkit agent chat */}
+          <div className="aid-chat-col">
+            <div className="aid-chat-msgs">
+              <div className="p-label" style={{ marginBottom: 4 }}>🤖 BWI Aid Agent — Genkit Orchestration</div>
+
+              {[
+                { done: true,  icon: '🔍', label: 'Identity Verification',      body: 'IC 810432-07-5219 matched against JPN registry — <strong>verified</strong>.' },
+                { done: true,  icon: '📍', label: 'Address Geocoding',           body: 'Jalan Bagan Luar confirmed inside <strong>Flood Zone Butterworth-1</strong> (Alert Level 3).' },
+                { done: true,  icon: '💰', label: 'Eligibility Scoring',         body: 'Income criteria met · No existing claim · Score: <strong>94/100</strong>.' },
+                { done: true,  icon: '📋', label: 'BWI Form Auto-Fill',          body: 'Borang BWI-2026 completed from extracted data. Ready for JKM submission.' },
+                { done: false, icon: '⏳', label: 'JKM Portal Submission',       body: 'Submitting to portal.jkm.gov.my… <span class="step-spin">⟳</span>' },
+              ].map((s, i) => (
+                <div className="agent-step" key={i}>
+                  <div className="step-icon">{s.icon}</div>
+                  <div className="step-body">
+                    <div className={`step-label ${s.done ? 'step-done' : ''}`}>{s.done ? '✓ ' : ''}{s.label}</div>
+                    <span dangerouslySetInnerHTML={{ __html: s.body }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="success-card">
+              <div className="sc-top">
+                <div className="sc-icon">✅</div>
+                <div>
+                  <div className="sc-title">Aid Approved!</div>
+                  <div className="sc-sub">Bantuan Wang Ihsan (BWI) — Flood Relief 2026</div>
+                </div>
+              </div>
+              <div className="sc-amount">RM 1,000.00</div>
+              <div className="sc-meta">
+                <div>Tracking ID <span>#BWI-9527</span></div>
+                <div>Disbursement <span>1–3 business days</span></div>
+                <div>Via <span>DuitNow / Bank Islam</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ── DISASTER GUIDE ─────────────────────────────────────────────────── */}
+      {activeTab === 'guide' && (
+        <div className="guide-layout">
+
+          {/* Main chat area */}
+          <div className="guide-main">
+            <div className="guide-msgs">
+
+              <div className="gmsg-user">
+                What is the government's flood compensation policy for homeowners?
+              </div>
+
+              <div className="gmsg-ai">
+                <div className="gmsg-ai-hdr">✦ Gemini · Grounded via Vertex AI Search</div>
+                Under the <strong>Skim Bantuan Bencana Negara (SBBN)</strong>, homeowners in declared flood disaster zones are entitled to:
+                <br /><br />
+                • <strong>BWI (Bantuan Wang Ihsan)</strong> — RM1,000 per household for immediate relief<br />
+                • <strong>Home Repair Grant</strong> — up to RM5,000 for structural damage (means-tested)<br />
+                • <strong>Furniture Replacement</strong> — up to RM2,500 via JKM, requires photo evidence<br />
+                <br />
+                Claims must be filed within <strong>60 days</strong> of the disaster declaration. Applications go through <strong>JKM district offices</strong> or the online portal at portal.jkm.gov.my.
+                <div className="citations">
+                  <span className="citation-chip">[1] NADMA Circular 2023</span>
+                  <span className="citation-chip">[2] JKM Bencana Guidelines</span>
+                  <span className="citation-chip">[3] Penang DRO Policy</span>
+                  <span className="grounded-tag">✓ Grounded</span>
+                </div>
+              </div>
+
+              <div className="gmsg-user">
+                Is there special aid for flood victims who are also B40 households?
+              </div>
+
+              <div className="gmsg-ai">
+                <div className="gmsg-ai-hdr">✦ Gemini · Grounded via Vertex AI Search</div>
+                Yes. B40 households (household income ≤ RM4,849/month) qualify for <strong>additional top-up aid</strong> under the <strong>Program Bantuan Sara Hidup (BSH) Emergency Supplement</strong>:
+                <br /><br />
+                • Additional <strong>RM500 emergency supplement</strong> on top of BWI<br />
+                • Priority processing — approval within <strong>48 hours</strong><br />
+                • E-Kasih registered families are auto-identified; no separate application needed<br />
+                <div className="citations">
+                  <span className="citation-chip">[1] BSH Emergency Guidelines</span>
+                  <span className="citation-chip">[2] MOF Circular B40 Flood</span>
+                  <span className="grounded-tag">✓ Grounded</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="guide-input-row">
+              <input
+                className="guide-input"
+                placeholder="Ask about flood policy, aid eligibility, relief procedures…"
+                readOnly
+              />
+              <button className="guide-send" type="button">Send</button>
+            </div>
+          </div>
+
+          {/* Source documents panel */}
+          <div className="guide-sources">
+            <div className="p-label">📚 Source Documents</div>
+            <div className="vertex-badge">
+              <span>🔍</span> Vertex AI Search · RAG
+            </div>
+
+            {[
+              { name: 'NADMA Flood Compensation Circular 2023', org: 'NADMA Malaysia', relevance: '97%', snippet: 'Bantuan Wang Ihsan disbursement framework for flood-affected households, including eligibility criteria and claim procedures.' },
+              { name: 'JKM Disaster Assistance Guidelines v4.2', org: 'Jabatan Kebajikan Masyarakat', relevance: '94%', snippet: 'Means-tested grant matrix for home repair, furniture replacement, and temporary shelter allowances post-flood.' },
+              { name: 'Penang State DRO Policy 2024', org: 'Penang Disaster Relief Office', relevance: '91%', snippet: 'State-level supplementary aid for Penang residents, including coordination with district JKM offices in Butterworth.' },
+                            { name: 'BSH Emergency Supplement Memo', org: 'Ministry of Finance', relevance: '88%', snippet: 'B40 emergency supplement eligibility, e-Kasih auto-identification, and 48-hour priority processing SLA.' },
+            ].map((doc, i) => (
+              <div className="src-doc" key={i}>
+                <div className="src-doc-top">
+                  <div className="src-doc-name">{doc.name}</div>
+                  <div className="src-relevance">{doc.relevance}</div>
+                </div>
+                <div className="src-doc-org">{doc.org}</div>
+                <div className="src-doc-snippet">{doc.snippet}</div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }

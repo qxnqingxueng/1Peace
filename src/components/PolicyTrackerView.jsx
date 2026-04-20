@@ -642,7 +642,7 @@ function Dashboard({ profile }) {
         className="mb-8 flex flex-col gap-3">
         <div className="inline-flex items-center gap-2 rounded-lg border border-[#e2e8f0] bg-white px-4 py-2 text-[13px] font-semibold text-[#334155] shadow-sm">
           <span>👤</span>
-          <span>{profile.incomeGroup} · {profile.state} · {profile.householdType}</span>
+          <span>{[profile.incomeGroup, profile.state, profile.householdType].filter(Boolean).join(' · ')}</span>
         </div>
         <div className="flex gap-1 rounded-xl border border-[#e2e8f0] bg-white p-1 shadow-sm">
           {TRACKER_TABS.map(t => (
@@ -685,22 +685,6 @@ export default function PolicyTrackerView({ profile: rawProfile }) {
 
   return (
     <div className="flex min-h-full flex-col bg-[#f4f7ff]">
-      {/* sticky page header */}
-      <div className="sticky top-0 z-20 border-b border-[#e8edf8] bg-white/95 px-5 py-4 backdrop-blur md:px-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#6c79a4]">1Peace · Civic Tools</p>
-            <h1 className="text-[20px] font-extrabold text-[#0f172a]">Policy Tracker</h1>
-          </div>
-          {profile && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={SS}
-              className="rounded-lg border border-[#c7d7ff] bg-[#f0f4ff] px-3 py-1.5 text-[12px] font-bold text-[#003399]">
-              RM {eligibleTotal.toLocaleString()} eligible
-            </motion.div>
-          )}
-        </div>
-      </div>
-
       {/* content */}
       <div className="flex-1">
         <AnimatePresence mode="wait">
