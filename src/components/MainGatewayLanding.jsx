@@ -77,11 +77,7 @@ function PeaceScene() {
   return (
     <div className="relative h-56 w-full overflow-hidden rounded-2xl border border-[#475569] bg-[#0B132B]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_26%_20%,rgba(255,204,0,0.2),transparent_35%),radial-gradient(circle_at_78%_76%,rgba(255,255,255,0.09),transparent_42%)]" />
-      <img
-        src="/policy-compass.avif"
-        alt="Policy and city landscape"
-        className="relative z-10 h-full w-full object-cover"
-      />
+      <img src="/policy-compass.avif" alt="Policy and city landscape" className="relative z-10 h-full w-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 z-20 h-16 bg-gradient-to-t from-[#0B132B] to-transparent" />
     </div>
   );
@@ -91,11 +87,7 @@ function CrisisScene() {
   return (
     <div className="relative h-56 w-full overflow-hidden rounded-2xl border border-[#2b4a66] bg-[#0F2942]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_22%,rgba(14,165,233,0.24),transparent_34%),radial-gradient(circle_at_78%_72%,rgba(237,28,36,0.18),transparent_40%)]" />
-      <img
-        src="/flood-shield.avif"
-        alt="Flood response landscape"
-        className="relative z-10 h-full w-full object-cover"
-      />
+      <img src="/flood-shield.avif" alt="Flood response landscape" className="relative z-10 h-full w-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-[#0F2942] to-transparent" />
     </div>
   );
@@ -308,16 +300,6 @@ export default function MainGatewayLanding({ onLaunch, onAuthComplete, userProfi
             transitions communities into real-time flood and tsunami response when risk escalates.
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green-400" />
-              Live flood monitoring
-            </span>
-            <span className="hidden text-slate-200 sm:inline">·</span>
-            <span>AI policy translation</span>
-            <span className="hidden text-slate-200 sm:inline">·</span>
-            <span>Automated aid claims</span>
-          </div>
         </header>
 
         <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2">

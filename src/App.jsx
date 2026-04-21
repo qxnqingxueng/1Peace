@@ -14,7 +14,7 @@ const knownPaths = new Set(pathways.map((item) => item.path));
 
 function getRouteFromHash() {
   const hash = window.location.hash.replace(/^#/, '');
-  if (\!hash || hash === '/') return '/';
+  if (!hash || hash === '/') return '/';
   return knownPaths.has(hash) ? hash : '/';
 }
 
@@ -51,7 +51,7 @@ function App() {
     [],
   );
 
-  if (route \!== '/') {
+  if (route !== '/') {
     return <PathwayPage route={route} onNavigate={navigate} userProfile={userProfile} />;
   }
 

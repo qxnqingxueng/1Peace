@@ -289,10 +289,11 @@ function AidSection({ profile }) {
   const [modal,   setModal]   = useState(null);
   const programmes = matchAid(profile);
   const eligible   = programmes.filter(p => p.status === 'eligible');
-  const total      = eligible.reduce((s, p) => {
+  const computedTotal = eligible.reduce((s, p) => {
     const n = p.amount.startsWith('RM') ? parseInt(p.amount.replace(/[^\d]/g, ''), 10) : 0;
     return s + (isNaN(n) ? 0 : n);
   }, 0);
+  const total = aidTotal ?? computedTotal;
   const cats    = ['All', ...new Set(programmes.map(p => p.cat))];
   const visible = programmes.filter(p => filter === 'All' || p.cat === filter);
 
@@ -631,7 +632,7 @@ const TRACKER_TABS = [
   { id: 'timeline', emoji: '📜',  label: 'Policy Timeline',  short: 'Timeline', sub: 'Drag the divider to compare exact text changes between bill versions' },
 ];
 
-function Dashboard({ profile }) {
+function Dashboard({ profile, aidTotal }) {
   const [activeTab, setActiveTab] = useState('aid');
 
   return (
@@ -676,7 +677,7 @@ function Dashboard({ profile }) {
 /* ─────────────────────────────────────────────────────────────
    ROOT EXPORT — receives profile from PolicyBrainPage
 ───────────────────────────────────────────────────────────── */
-export default function PolicyTrackerView({ profile: rawProfile }) {
+export default function PolicyTrackerView({ profile: rawProfile, aidTotal }) {
   const profile = rawProfile ? normalizeProfile(rawProfile) : null;
 
   const eligibleTotal = profile
@@ -698,7 +699,7 @@ export default function PolicyTrackerView({ profile: rawProfile }) {
                 </p>
               </motion.div>
             : <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={EX}>
-                <Dashboard profile={profile} />
+                <Dashboard profile={profile} aidTotal={aidTotal} />
               </motion.div>
           }
         </AnimatePresence>

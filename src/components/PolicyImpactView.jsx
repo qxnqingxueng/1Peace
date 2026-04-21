@@ -322,7 +322,7 @@ export default function PolicyImpactView() {
       <div className="eiv-controls">
         <select className="eiv-policy-select" value={policyId} onChange={e => setPolicyId(e.target.value)}>
           {visiblePolicies.map(p => (
-            <option key={p.id} value={p.id}>{p.name} \u2014 {p.label}</option>
+            <option key={p.id} value={p.id}>{p.name} — {p.label}</option>
           ))}
         </select>
         <div className="eiv-range-pills">
@@ -355,8 +355,8 @@ export default function PolicyImpactView() {
 
       <div className="eiv-mid">
         <div className="eiv-card">
-          <div className="eiv-card-title">Expenditure Trend \u2014 {policy.name}</div>
-          <div className="eiv-card-sub">RM million / period \u00b7 peak annotated</div>
+          <div className="eiv-card-title">Expenditure Trend — {policy.name}</div>
+          <div className="eiv-card-sub">RM million / period · peak annotated</div>
           <AreaChart series={series} peakLabel={data.peakLabel} color={policy.color} />
           <div className="eiv-stat-row">
             {[

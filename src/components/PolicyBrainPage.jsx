@@ -1432,7 +1432,7 @@ export default function PolicyBrainPage({ onBack, userProfile }) {
       </div>
       ) : activeModuleView === 'news' ? (
         <div className="flex-1 overflow-y-auto">
-          <PolicyTrackerView profile={trackerProfile} />
+          <PolicyTrackerView profile={trackerProfile} aidTotal={aidResult.total} />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">
