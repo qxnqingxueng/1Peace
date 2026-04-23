@@ -1,5 +1,7 @@
 # 1Peace — One Malaysia, One Platform
 
+**🌐 Live Demo:** [https://peace-2c6e2.web.app](https://peace-2c6e2.web.app)
+
 > A citizen-first civic-tech super-platform that turns complex government policy into practical everyday decisions — and transitions communities into real-time flood and disaster response when risk escalates.
 
 ---
@@ -194,6 +196,53 @@ users/
       createdAt (serverTimestamp),
       lastLoginAt (serverTimestamp)
     }
+```
+
+---
+
+## 🧪 Developed with Google AI Studio
+
+1Peace was prototyped and iterated entirely inside **Google AI Studio** before production deployment. Every Gemini prompt powering the platform — from policy translation to flood situational parsing — was first designed, tested, and refined there.
+
+### How We Used Google AI Studio
+
+- **Prompt prototyping:** All Gemini Flash and Gemini Pro prompts were written and benchmarked directly in AI Studio's prompt editor, allowing rapid iteration on tone, output structure, and accuracy before touching any code.
+- **Multimodal testing:** We used AI Studio's file upload feature to test Gemini 2.0's document reading capability — uploading real TNB utility bills and verifying that the model could correctly extract account holder name, address, and usage data for the BWI aid agent.
+- **System instruction tuning:** The citizen-facing chat assistant's system instruction (plain language, B40-aware, bilingual) was refined through dozens of AI Studio sessions before being hardcoded into the Genkit flow.
+- **Response structure validation:** We used AI Studio's JSON mode to ensure policy translation outputs consistently returned structured fields (`what_it_does`, `who_qualifies`, `what_you_receive`, `action_required`) before wiring them to the frontend.
+
+### Sample Prompts We Developed
+
+**Policy Translator — System Instruction**
+```
+You are a Malaysian civic assistant. Translate the following government bill clause into plain language 
+that a B40 citizen with no legal background can understand. Respond in both English and Bahasa Malaysia. 
+Output must include: what this clause does, who is affected, what action (if any) the citizen must take, 
+and the deadline if one exists. Be direct. Avoid jargon.
+```
+
+**Impact Calculator — Personalised Analysis**
+```
+Given this citizen profile: income group B40, state Selangor, household type single parent, 
+vehicle diesel car, 2 dependants — calculate the net monthly financial impact of the 
+Targeted Diesel Subsidy Rationalisation Bill 2024. Show the fuel cost increase separately 
+from the BUDI MADANI credit offset. Return a single net figure in ringgit.
+```
+
+**Flood Situational Parser — Crisis Mode**
+```
+Parse the following NADMA flood alert JSON and return a plain-language situational summary 
+for a citizen in the affected district. Include: current water level status, nearest open 
+PPS shelters, recommended evacuation route, and whether the Bantuan Wang Ihsan aid window 
+is active. Keep the response under 100 words. Prioritise clarity over completeness.
+```
+
+**BWI Aid Agent — Multimodal Document Extraction**
+```
+You are processing a Malaysian citizen's TNB utility bill image to pre-fill a Bantuan Wang Ihsan 
+disaster aid application. Extract: full name, IC number if visible, service address, account number, 
+and latest billing month. If any field is not clearly visible, return null for that field — do not guess. 
+Output as JSON only.
 ```
 
 ---
