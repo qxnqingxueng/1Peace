@@ -311,7 +311,7 @@ export default function PolicyImpactView() {
 
   const cats = useMemo(() => ['All', ...new Set(POLICIES.map(p => p.cat))], []);
 
-  const visiblePolicies = catFilter === 'All' ? POLICIES : POLICIES.filter(p => p.cat === catFilter);
+  const visiblePolicies = POLICIES; // dropdown always shows all policies; catFilter highlights category only
 
   const peakVal = Math.max(...series);
   const avgVal  = Math.round(series.reduce((a, b) => a + b, 0) / series.length);

@@ -6,8 +6,8 @@ import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import {
   auth, db, firebaseConfigMessage, googleProvider, isFirebaseConfigured,
 } from '../firebase/client';
-import PolicyTrackerView from './PolicyTrackerView';
-import PolicyImpactView from './PolicyImpactView';
+import PolicyTrackerView from '../views/Tracker';
+import PolicyImpactView from '../views/Impact';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SCOPED CSS  (injected once, removed on unmount)
@@ -342,6 +342,7 @@ const REPLIES = {
 const REFS = {
   diesel:['Diesel Subsidy Bill 2024 §4A','Warta P.U.(A) 215/2024','BUDI MADANI Circular'],
   str:['STR 2026 Framework §3','Treasury Circular 2026','PADU Verification Guidelines'],
+  str_eligible:['STR 2026 Framework §3','Treasury Circular 2026','PADU Verification Guidelines'],
   tax:['Income Tax Act 1967 §45','Finance Act 2024 Schedule 9','LHDN Practice Note 12/2024'],
   gig:['Income Tax Act §4(f)','LHDN e-Invoice Guidelines','MyInvois API Specification'],
   epf:['EPF Act 1991 §54','EPF Amendment 2024','EPF Akaun Fleksibel Circular'],
@@ -355,6 +356,7 @@ const REFS = {
 const QRS = {
   diesel:['How do I register on PADU?','Calculate my fuel cost impact','What if I miss the deadline?'],
   str:['When is STR 2026 disbursed?','How to complete PADU profile?','What other aid do I qualify for?'],
+  str_eligible:['How much STR 2026 do I get?','What other aid do I qualify for?','How to complete PADU profile?'],
   tax:['How to file e-Filing?','What is PCB deduction?','RPGT on property sale?'],
   gig:['How to declare Grab income?','What is e-Invoice?','Do I need SSM as seller?'],
   epf:['How to withdraw Account 3?','Can I withdraw for education?','EPF dividend rate?'],
@@ -363,10 +365,13 @@ const QRS = {
   edu:['How to apply PTPTN deferment?','What is PTPTN discount offer?'],
 };
 
-const IMPACT_TYPES = new Set(['diesel','str','tax','epf','housing']);
+const IMPACT_TYPES = new Set(['diesel','str','str_eligible','tax','epf','housing']);
 
 function classify(q) {
   q = q.toLowerCase();
+  if (
+    /am i eligible for str 2026|str 2026 eligible|qualify for str|str eligibility|eligible for str|do i qualify for str/.test(q)
+  ) return 'str_eligible';
   if (/diesel|budi madani|ron95|minyak|petrol subsid/.test(q)) return 'diesel';
   if (/str |rahmah|cash aid|bantuan tunai/.test(q)) return 'str';
   if (/tax relief|lhdn|income tax|e.filing|pcb|relief|rpgt|stamp duty/.test(q)) return 'tax';
@@ -810,6 +815,82 @@ function AgentPanel() {
   );
 }
 
+// add near other helpers / constants
+function normalizeDependants(value) {
+  if (value === '6+') return 6;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function normalizeMonthlyIncome(value, incomeGroup) {
+  if (value === '15000+') return 15000;
+  const n = Number(value);
+  if (Number.isFinite(n)) return n;
+
+  if (incomeGroup === 'B40') return 3000;
+  if (incomeGroup === 'M40') return 6000;
+  return 12000;
+}
+
+function buildSTREligibilityReply(profile) {
+  const incomeGroup = profile?.incomeGroup || 'B40';
+  const householdType = profile?.householdType || 'Single';
+  const state = profile?.state || 'Malaysia';
+  const dependants = normalizeDependants(profile?.dependants);
+  const monthlyIncome = normalizeMonthlyIncome(profile?.monthlyIncome, incomeGroup);
+
+  let eligible = false;
+  let baseAmount = 0;
+  let reason = '';
+  let householdLabel = householdType;
+
+  if (householdType === 'Single Parent') {
+    eligible = incomeGroup === 'B40' || monthlyIncome <= 5000;
+    baseAmount = eligible ? 1000 + Math.min(dependants, 4) * 250 : 0;
+    reason = eligible
+      ? `Based on your profile as a <strong>single parent</strong> in <strong>${state}</strong>, you are likely eligible for <strong>STR 2026</strong>.`
+      : `Based on your profile as a <strong>single parent</strong> in <strong>${state}</strong>, you may not meet the current estimated STR 2026 income threshold.`;
+  } else if (householdType === 'Married') {
+    eligible = incomeGroup === 'B40' || monthlyIncome <= 5000;
+    baseAmount = eligible ? 1000 + Math.min(dependants, 4) * 250 : 0;
+    reason = eligible
+      ? `Based on your profile as a <strong>household applicant</strong> in <strong>${state}</strong>, you are likely eligible for <strong>STR 2026</strong>.`
+      : `Based on your household profile in <strong>${state}</strong>, you may not meet the current estimated STR 2026 income threshold.`;
+  } else if (householdType === 'Senior Citizen') {
+    eligible = incomeGroup === 'B40' || monthlyIncome <= 5000;
+    baseAmount = eligible ? 800 : 0;
+    reason = eligible
+      ? `Based on your profile as a <strong>senior citizen</strong> in <strong>${state}</strong>, you are likely eligible for <strong>STR 2026</strong>.`
+      : `Based on your senior citizen profile in <strong>${state}</strong>, you may not meet the current estimated STR 2026 income threshold.`;
+  } else {
+    householdLabel = 'Single';
+    eligible = incomeGroup === 'B40' || monthlyIncome <= 2500;
+    baseAmount = eligible ? 500 : 0;
+    reason = eligible
+      ? `Based on your profile as a <strong>single adult</strong> in <strong>${state}</strong>, you are likely eligible for <strong>STR 2026</strong>.`
+      : `Based on your profile as a <strong>single adult</strong> in <strong>${state}</strong>, you may not meet the current estimated STR 2026 threshold.`;
+  }
+
+  const outcomeBox = eligible
+    ? `<div class="info-box green">✅ <strong>Estimated result:</strong> You likely qualify for <strong>STR 2026</strong>.<br/>Estimated amount: <strong>RM${baseAmount.toLocaleString()}</strong>.</div>`
+    : `<div class="info-box red">❌ <strong>Estimated result:</strong> You may not qualify for <strong>STR 2026</strong> based on the current profile details in 1Peace.</div>`;
+
+  return `
+    <p><strong>STR 2026 — Personalised eligibility check</strong></p>
+    <p>${reason}</p>
+    <ul>
+      <li><strong>Income group:</strong> ${incomeGroup}</li>
+      <li><strong>Household type:</strong> ${householdLabel}</li>
+      <li><strong>State:</strong> ${state}</li>
+      <li><strong>Dependants:</strong> ${dependants}</li>
+      <li><strong>Monthly income used:</strong> RM${monthlyIncome.toLocaleString()}</li>
+    </ul>
+    ${outcomeBox}
+    <div class="info-box blue">📌 <strong>Note:</strong> This is a profile-based estimate. Final eligibility still depends on your latest PADU / STR verification details.</div>
+    <div class="info-box gold">⚠️ <strong>Next step:</strong> Make sure your PADU profile is complete before the STR deadline.</div>
+  `;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    MAIN EXPORT
 ───────────────────────────────────────────────────────────────────────────── */
@@ -1022,6 +1103,10 @@ export default function PolicyBrainPage({ onBack, userProfile }) {
 
     const uid = Date.now();
     const type = classify(q);
+    const aiText =
+    type === 'str_eligible'
+      ? buildSTREligibilityReply(profile)
+      : (REPLIES[type] || REPLIES.general);
     setMessages(cur => [
       ...cur,
       { id: uid, role: 'user', text: q },
@@ -1256,8 +1341,7 @@ export default function PolicyBrainPage({ onBack, userProfile }) {
           <button className="profile-bar" onClick={() => user ? setIsProfileSetupOpen(true) : setShowAuthScreen(true)}>
             <div className="profile-avatar">{initials}</div>
             <div>
-              <div className="pname">{user?.displayName || 'Guest'}</div>
-              <div className="ptag-line">{profileTagLine}</div>
+              <div className="pname">{displayName}</div>
             </div>
             <div className="profile-complete">● Set</div>
           </button>

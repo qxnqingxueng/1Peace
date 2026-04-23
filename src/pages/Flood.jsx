@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import MapDashboard from './MapDashboard';
+import MapDashboard from '../map/MapView';
 import { useModeTheme } from '../hooks/useModeTheme';
 
 /* ─────────────────────────────────────────────────────────────────────────────

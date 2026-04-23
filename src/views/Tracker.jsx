@@ -284,7 +284,7 @@ function ApplyModal({ prog, onClose }) {
   );
 }
 
-function AidSection({ profile }) {
+function AidSection({ profile, aidTotal }) {
   const [filter,  setFilter]  = useState('All');
   const [modal,   setModal]   = useState(null);
   const programmes = matchAid(profile);
@@ -664,7 +664,7 @@ function Dashboard({ profile, aidTotal }) {
         <motion.div key={activeTab}
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }} transition={EX}>
-          {activeTab === 'aid'      && <AidSection profile={profile} />}
+          {activeTab === 'aid'      && <AidSection profile={profile} aidTotal={aidTotal} />}
           {activeTab === 'bills'    && <BillSection />}
           {activeTab === 'timeline' && <TimelineSection />}
         </motion.div>

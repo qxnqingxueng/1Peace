@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import MainGatewayLanding from './components/MainGatewayLanding';
-import PolicyBrainPage from './components/PolicyBrainPage';
-import CrisisOpsPage from './components/CrisisOpsPage';
+import MainGatewayLanding from './pages/Landing';
+import PolicyBrainPage from './pages/Policy';
+import CrisisOpsPage from './pages/Flood';
 
 const pathways = [
   { id: '01', path: '/policy-brain',    name: 'Policy Brain',   stage: 'Before',   accent: 'gold' },
