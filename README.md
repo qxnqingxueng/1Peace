@@ -397,3 +397,58 @@ Welcome to 1Peace! Here's how to get the most out of the platform across both pe
 | Text Subtle | `#94a3b8` | Placeholders, disabled states |
 
 1Peace uses a two-mode design system. **Peace mode** applies the navy-and-gold civic palette. **Crisis mode** activates automatically via the `useModeTheme` hook, setting `data-mode="crisis"` on `document.body` to switch the entire interface to a high-contrast red-and-dark emergency palette — no manual class toggling required.
+
+🧱 Challenges We Ran Into
+1. Grounding AI on Legally Sensitive Content
+The hardest constraint was ensuring Gemini never hallucinated on policy content. A wrong RM figure or incorrect eligibility ruling could directly harm a B40 citizen. We solved this by grounding every AI response strictly through Vertex AI Search — no policy answer is generated without a verified source chunk from our indexed parliament PDFs, LHDN circulars, or NADMA SOPs. Building and tuning that RAG pipeline to return the right clause — not just a semantically similar one — took significant iteration in Google AI Studio.
+2. Dual-Mode UI Without Re-Rendering the World
+Switching seamlessly between the navy/gold Peace palette and the high-contrast red/dark Crisis palette in real time — without unmounting the map, losing chat state, or causing layout flashes — required careful architecture. We solved this with the useModeTheme hook, which writes a single data-mode attribute to document.body. All colour tokens are CSS variables scoped to [data-mode="crisis"], meaning the entire theme swap is a single DOM write with zero React re-renders.
+3. Real-Time 3D Map Performance
+Rendering live flood zone polygons, evacuation path layers, and PPS shelter scatter plots simultaneously in Deck.gl — while keeping the map interactive at 60fps on mid-range Malaysian mobile devices — required aggressive layer management. We had to carefully tune PolygonLayer opacity animations, replace static setInterval tickers with requestAnimationFrame-aligned updates, and lazy-load Crisis Mode layers only when the mode actually activates.
+4. Autonomous Aid Agent — Trust & Safety
+Building an agent that submits government forms on a citizen's behalf introduced a hard UX and ethical constraint: the citizen must understand and explicitly approve every action before it is taken. We enforced this with a mandatory confirmation step in the My Tasks panel — the Vertex AI Agent flow is paused after pre-filling and only resumes on citizen approval. Designing the right level of transparency (enough to build trust, not so much it overwhelms a B40 user) required many iterations.
+5. Multimodal Document Extraction Reliability
+Using Gemini 2.0 to read citizen-uploaded TNB utility bills and damage photos for the Bantuan Wang Ihsan (BWI) agent was powerful but fragile. Real-world bills had inconsistent layouts, low-contrast printing, and partial occlusions. We hardened the extraction prompt to return null for any field it was not confident about — never guessing — and surfaced a clear manual fallback in the UI whenever extraction was incomplete.
+6. Offline-Resilient Civic Data Layer
+Many flood-affected areas in Malaysia have degraded connectivity during a crisis — exactly when Flood Shield needs to work. We structured all core civic data (aid eligibility rules, bill summaries, PPS shelter coordinates) as static data co-located in components, enabling the Policy Compass and Aid Eligibility views to function fully offline with zero API calls. Only live AI chat and real-time flood data require network access.
+7. Firebase Null-Safe Initialisation for Demo Mode
+The app needed to run in demo mode for evaluators without a live Firebase project. Making every Firebase consumer (auth, db, storage, functions) null-safe throughout a large codebase — without crashing or showing broken states — required a strict conditional singleton pattern at the client.js level and defensive null-checks at every Firestore read/write call site.
+
+🗺️ Future Roadmap
+Phase 1 — Klang Valley Pilot (Q3 2025)
+
+Launch Policy Compass and Flood Shield to B40 households in Klang Valley (4.7M citizens)
+Onboard live PADU, BUDI MADANI, and PTPTN deferment as the first three automated aid workflows
+Integrate real-time JKM flood sensor API feeds for live water level data in Selangor and Kuala Lumpur
+Launch WhatsApp and Email bill-tracking alert pipeline
+Open beta to civil society organisations and NGO partners for feedback
+
+Phase 2 — National Expansion & Agent Scale (Q4 2025)
+
+Expand all 16 states with localised flood zone data and state-specific aid programmes
+Grow the autonomous agent to cover 10+ federal aid programmes end-to-end — including STR, eKasih, TEKUN, and housing assistance schemes
+Launch the Bantuan Wang Ihsan (BWI) post-disaster agent with full multimodal document extraction for damage claims
+Release Bahasa Malaysia as the primary interface language with full bilingual parity across all AI outputs
+Publish the 1Peace Policy API — allowing NGOs, journalists, and researchers to query the RAG corpus programmatically
+MyDigital and MDEC partnership for live parliament bill feed integration
+
+Phase 3 — Intelligence Layer (Q1 2026)
+
+Predictive Aid Alerts — proactively notify citizens of upcoming policy changes that will affect their household before they take effect, based on their profile and bill tracking subscriptions
+Policy Comparison Engine — side-by-side analysis of policy proposals across political parties, scored for B40/M40 household impact in plain language
+Constituency Impact Map — visualise how a policy affects every parliamentary constituency in Malaysia using the 3D facility map layer
+Offline PWA Mode — full Progressive Web App with service worker caching for core civic data, so Flood Shield remains usable in flood-affected areas with no connectivity
+Community Reporting Layer — allow citizens to report flooded roads, closed PPS shelters, and inaccessible facilities directly from the Flood Shield map, feeding a crowd-sourced civic data layer back into the routing engine
+
+Phase 4 — ASEAN & Institutional Scale (2026+)
+
+Adapt the Policy Compass for Indonesia, Thailand, and the Philippines — countries with structurally similar policy opacity and disaster vulnerability challenges
+Launch a Government Dashboard for federal agencies — allowing NADMA, JKM, and EPU to monitor real-time citizen policy sentiment, aid application volumes, and flood response coverage gaps
+Pursue Series A fundraising to scale engineering capacity and extend the Google Cloud AI stack across the ASEAN region
+Explore formal data-sharing agreements with DOSM, Parliament Malaysia, and Bank Negara for authoritative, real-time policy data grounding
+
+
+Long-Term Vision
+
+Every Malaysian citizen — regardless of income, literacy, or technical ability — can understand the policies that govern their life, claim every ringgit they are legally entitled to, and stay safe when disaster strikes. That is the promise of 1Peace.
+
