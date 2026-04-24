@@ -8,7 +8,7 @@
 
 ## 🎯 About
 
-**1Peace** is a Malaysian civic-tech super-platform built to close the gap between government policy and the everyday citizen. Most Malaysians never claim aid they are legally entitled to — not because they are ineligible, but because the system is too complex to navigate. 1Peace changes that.
+**1Peace** is a Malaysian civic-tech super-platform built to close the gap between government policy and the everyday citizen. Most Malaysians never claim aid they are legally entitled to, not because they are ineligible, but because the system is too complex to navigate. 1Peace changes that.
 
 The platform operates across two mandates:
 
@@ -28,16 +28,8 @@ The platform transitions seamlessly from **Chat → Understand → Act**, making
 - 📊 **Impact Dashboard** — Macro view of policy expenditure trends, sector impact rankings, operator revenue shifts, and affected local infrastructure.
 - ✅ **My Tasks** — 1Peace pre-fills and submits government applications on your behalf. You review and approve every action before it is taken.
 - 🌊 **Flood Shield** — Real-time crisis mode with escalation monitoring, nearest shelter routing, and automated post-disaster aid submission.
-
----
-
-## 🏆 Project 2030: MyAI Future Hackathon
-
-This project was built for **Project 2030: MyAI Future Hackathon**, organised by GDG on Campus Universiti Teknologi Malaysia (UTM) Johor Bahru as part of the **Build with AI 2026** programme.
-
-The hackathon challenges teams to build impactful, AI-powered solutions aligned with Malaysia's national development goals and the United Nations Sustainable Development Goals (SDGs), using Google technologies.
-
-🔗 [Event Page](https://gdg.community.dev/events/details/google-gdg-on-campus-universiti-teknologi-malaysia-johor-bahru-malaysia-presents-build-with-ai-2026-hackathon-project-2030-myai-future-hackathon/cohost-gdg-on-campus-universiti-teknologi-malaysia-johor-bahru-malaysia/)
+- 🆘 **Claim Aid (Automated)** — Post-disaster aid submission in three steps: upload your utility bill, IC photo, and BWI form → AI extracts your details automatically → 1Peace submits directly to the JKM portal on your behalf.
+- 📖 **Disaster Guide** — AI-powered emergency protocol search. Ask anything — evacuation steps, what to bring, how to register at a PPS — and get an instant, plain-language answer drawn from official JKM and Majlis Keselamatan Negara guidelines.
 
 ---
 
@@ -48,7 +40,7 @@ The hackathon challenges teams to build impactful, AI-powered solutions aligned 
 ### SDG 10 — Reduced Inequalities
 **Target 10.2:** Promote social, economic, and political inclusion of all, irrespective of age, sex, disability, race, ethnicity, origin, religion, or economic status.
 
-Malaysia's B40 and M40 households are disproportionately affected by policy changes — subsidy reforms, tax adjustments, and aid restructuring — yet they are the least equipped to navigate the bureaucratic systems designed to protect them. 1Peace directly addresses this by translating complex legal text into plain language, calculating real ringgit impact per household profile, and removing every administrative barrier between a citizen and the aid they are legally entitled to. This is financial inclusion made operational.
+Malaysia's B40 and M40 households are disproportionately affected by policy changes, subsidy reforms, tax adjustments, and aid restructuring — yet they are the least equipped to navigate the bureaucratic systems designed to protect them. 1Peace directly addresses this by translating complex legal text into plain language, calculating real ringgit impact per household profile, and removing every administrative barrier between a citizen and the aid they are legally entitled to. This is financial inclusion made operational.
 
 ### SDG 11 — Sustainable Cities and Communities
 **Target 11.5:** Significantly reduce the number of deaths and the number of people affected by disasters, including water-related disasters.
@@ -223,10 +215,7 @@ and the deadline if one exists. Be direct. Avoid jargon.
 
 **Impact Calculator — Personalised Analysis**
 ```
-Given this citizen profile: income group B40, state Selangor, household type single parent, 
-vehicle diesel car, 2 dependants — calculate the net monthly financial impact of the 
-Targeted Diesel Subsidy Rationalisation Bill 2024. Show the fuel cost increase separately 
-from the BUDI MADANI credit offset. Return a single net figure in ringgit.
+calculate the net monthly financial impact of the Targeted Diesel Subsidy Rationalisation Bill 2024. Show the fuel cost increase separately from the BUDI MADANI credit offset. Return a single net figure in ringgit.
 ```
 
 **Flood Situational Parser — Crisis Mode**
@@ -398,24 +387,37 @@ Welcome to 1Peace! Here's how to get the most out of the platform across both pe
 
 1Peace uses a two-mode design system. **Peace mode** applies the navy-and-gold civic palette. **Crisis mode** activates automatically via the `useModeTheme` hook, setting `data-mode="crisis"` on `document.body` to switch the entire interface to a high-contrast red-and-dark emergency palette — no manual class toggling required.
 
-🧱 Challenges We Ran Into
-1. Grounding AI on Legally Sensitive Content
-The hardest constraint was ensuring Gemini never hallucinated on policy content. A wrong RM figure or incorrect eligibility ruling could directly harm a B40 citizen. We solved this by grounding every AI response strictly through Vertex AI Search — no policy answer is generated without a verified source chunk from our indexed parliament PDFs, LHDN circulars, or NADMA SOPs. Building and tuning that RAG pipeline to return the right clause — not just a semantically similar one — took significant iteration in Google AI Studio.
-2. Dual-Mode UI Without Re-Rendering the World
+---
+
+## 🧱 Challenges We Ran Into
+
+###1. Grounding AI on Legally Sensitive Content
+
+The hardest constraint was ensuring Gemini never hallucinated on policy content. A wrong RM figure or incorrect eligibility ruling could directly harm a B40 citizen. We solved this by grounding every AI response strictly through Vertex AI Search, no policy answer is generated without a verified source chunk from our indexed parliament PDFs, LHDN circulars, or NADMA SOPs. Building and tuning that RAG pipeline to return the right clause, not just a semantically similar one — took significant iteration in Google AI Studio.
+
+###2. Dual-Mode UI Without Re-Rendering the World
 Switching seamlessly between the navy/gold Peace palette and the high-contrast red/dark Crisis palette in real time — without unmounting the map, losing chat state, or causing layout flashes — required careful architecture. We solved this with the useModeTheme hook, which writes a single data-mode attribute to document.body. All colour tokens are CSS variables scoped to [data-mode="crisis"], meaning the entire theme swap is a single DOM write with zero React re-renders.
-3. Real-Time 3D Map Performance
+
+###3. Real-Time 3D Map Performance
 Rendering live flood zone polygons, evacuation path layers, and PPS shelter scatter plots simultaneously in Deck.gl — while keeping the map interactive at 60fps on mid-range Malaysian mobile devices — required aggressive layer management. We had to carefully tune PolygonLayer opacity animations, replace static setInterval tickers with requestAnimationFrame-aligned updates, and lazy-load Crisis Mode layers only when the mode actually activates.
-4. Autonomous Aid Agent — Trust & Safety
+
+###4. Autonomous Aid Agent — Trust & Safety
 Building an agent that submits government forms on a citizen's behalf introduced a hard UX and ethical constraint: the citizen must understand and explicitly approve every action before it is taken. We enforced this with a mandatory confirmation step in the My Tasks panel — the Vertex AI Agent flow is paused after pre-filling and only resumes on citizen approval. Designing the right level of transparency (enough to build trust, not so much it overwhelms a B40 user) required many iterations.
-5. Multimodal Document Extraction Reliability
+
+###5. Multimodal Document Extraction Reliability
 Using Gemini 2.0 to read citizen-uploaded TNB utility bills and damage photos for the Bantuan Wang Ihsan (BWI) agent was powerful but fragile. Real-world bills had inconsistent layouts, low-contrast printing, and partial occlusions. We hardened the extraction prompt to return null for any field it was not confident about — never guessing — and surfaced a clear manual fallback in the UI whenever extraction was incomplete.
-6. Offline-Resilient Civic Data Layer
+
+###6. Offline-Resilient Civic Data Layer
 Many flood-affected areas in Malaysia have degraded connectivity during a crisis — exactly when Flood Shield needs to work. We structured all core civic data (aid eligibility rules, bill summaries, PPS shelter coordinates) as static data co-located in components, enabling the Policy Compass and Aid Eligibility views to function fully offline with zero API calls. Only live AI chat and real-time flood data require network access.
-7. Firebase Null-Safe Initialisation for Demo Mode
+
+###7. Firebase Null-Safe Initialisation for Demo Mode
 The app needed to run in demo mode for evaluators without a live Firebase project. Making every Firebase consumer (auth, db, storage, functions) null-safe throughout a large codebase — without crashing or showing broken states — required a strict conditional singleton pattern at the client.js level and defensive null-checks at every Firestore read/write call site.
 
-🗺️ Future Roadmap
-Phase 1 — Klang Valley Pilot (Q3 2025)
+---
+
+## 🗺️ Future Roadmap
+
+###Phase 1 — Klang Valley Pilot (Q3 2025)
 
 Launch Policy Compass and Flood Shield to B40 households in Klang Valley (4.7M citizens)
 Onboard live PADU, BUDI MADANI, and PTPTN deferment as the first three automated aid workflows
@@ -423,7 +425,7 @@ Integrate real-time JKM flood sensor API feeds for live water level data in Sela
 Launch WhatsApp and Email bill-tracking alert pipeline
 Open beta to civil society organisations and NGO partners for feedback
 
-Phase 2 — National Expansion & Agent Scale (Q4 2025)
+###Phase 2 — National Expansion & Agent Scale (Q4 2025)
 
 Expand all 16 states with localised flood zone data and state-specific aid programmes
 Grow the autonomous agent to cover 10+ federal aid programmes end-to-end — including STR, eKasih, TEKUN, and housing assistance schemes
@@ -432,7 +434,7 @@ Release Bahasa Malaysia as the primary interface language with full bilingual pa
 Publish the 1Peace Policy API — allowing NGOs, journalists, and researchers to query the RAG corpus programmatically
 MyDigital and MDEC partnership for live parliament bill feed integration
 
-Phase 3 — Intelligence Layer (Q1 2026)
+###Phase 3 — Intelligence Layer (Q1 2026)
 
 Predictive Aid Alerts — proactively notify citizens of upcoming policy changes that will affect their household before they take effect, based on their profile and bill tracking subscriptions
 Policy Comparison Engine — side-by-side analysis of policy proposals across political parties, scored for B40/M40 household impact in plain language
@@ -440,15 +442,16 @@ Constituency Impact Map — visualise how a policy affects every parliamentary c
 Offline PWA Mode — full Progressive Web App with service worker caching for core civic data, so Flood Shield remains usable in flood-affected areas with no connectivity
 Community Reporting Layer — allow citizens to report flooded roads, closed PPS shelters, and inaccessible facilities directly from the Flood Shield map, feeding a crowd-sourced civic data layer back into the routing engine
 
-Phase 4 — ASEAN & Institutional Scale (2026+)
+###Phase 4 — ASEAN & Institutional Scale (2026+)
 
 Adapt the Policy Compass for Indonesia, Thailand, and the Philippines — countries with structurally similar policy opacity and disaster vulnerability challenges
 Launch a Government Dashboard for federal agencies — allowing NADMA, JKM, and EPU to monitor real-time citizen policy sentiment, aid application volumes, and flood response coverage gaps
 Pursue Series A fundraising to scale engineering capacity and extend the Google Cloud AI stack across the ASEAN region
 Explore formal data-sharing agreements with DOSM, Parliament Malaysia, and Bank Negara for authoritative, real-time policy data grounding
 
+---
 
-Long-Term Vision
+##Long-Term Vision
 
 Every Malaysian citizen — regardless of income, literacy, or technical ability — can understand the policies that govern their life, claim every ringgit they are legally entitled to, and stay safe when disaster strikes. That is the promise of 1Peace.
 
